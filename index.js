@@ -1,6 +1,27 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
+var Sequelize = require('sequelize');
+//db connection string
+var sequelize = new Sequelize('backend_restful', 'am', 'matematika', {
+    host: 'localhost',
+    dialect: 'mysql',
+    pool: {
+        max: 5,
+        min: 0,
+        idle: 10000
+    }
+});
+
+// db structure
+// ----------------------------------------------------
+//Customers Table Structure
+var Customer = sequelize.define('Customer', {
+    name: Sequelize.STRING,
+    address: Sequelize.STRING,
+    birthday: Sequelize.DATE
+});
+
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -14,16 +35,31 @@ router.get('/ping', function(req, res) {
     res.json({ message: 'Pong on :' + Date().toLocaleString() });
 });
 
+
 // /api/customers
 // ----------------------------------------------------
 router.route('/customers')
     .post(function(req, res) {
-        //TODO save customer
-        res.json({ message: 'Save new customer' })
+        //save customer
+        Customer.create({
+            name: req.body.name,
+            address: req.body.address,
+            birthday: req.body.birthday
+        }).then(
+            function(data, error) {
+                console.log({ "saved customer": data });
+                res.json(data);
+            }).catch(
+            function(reason) {
+                console.log({ "error while saving customer ": reason });
+                res.status(500).json({"error" : reason.message});
+            });
     })
     .get(function(req, res) {
-        //TODO get all customers
-        res.json({ message: 'Return all customers' })
+        //get all customers
+        Customer.findAll({}).then(function(data) {
+            res.json(data);
+        });
     });
 
 // /api/customers/:id
@@ -45,5 +81,23 @@ router.route('/customers/:id')
 
 app.use('/api', router);
 
+sequelize.sync().then(function() {
+    app.listen(port, function() {
+        console.log('Server is up and listening on ' + port);
+    });
+});
+
+
+/*
+sequelize.sync({ force: true }).then(function(err) {
+    if (err) {
+        console.log('An error occur while creating tables');
+    } else {
+        console.log('Tables created successfully');
+    }
+});
+
+
 app.listen(port);
 console.log('Server is up and listening on ' + port);
+*/
