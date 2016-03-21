@@ -4,6 +4,8 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var bodyParser = require('body-parser');
 var Sequelize = require('sequelize');
+var moment = require('moment');
+
 //db connection string
 var sequelize = new Sequelize('backend_restful', 'am', 'matematika', {
     host: 'localhost',
@@ -49,24 +51,24 @@ router.route('/customers')
         }).then(
             function(data, error) {
                 console.log({ "Saved customer": data });
-                io.emit('event', { entity: 'customer', action: 'save', data: data });
+                io.emit('event', { datetime: moment().format('DD.MM.YYYY, hh:mm:ss'), entity: 'customer', action: 'save', data: data });
                 res.json(data);
             }).catch(
             function(reason) {
                 console.log({ "Error while saving customer ": reason });
-                 io.emit('event', { entity: 'customer', action: 'Error on: save', data: reason });
+                 io.emit('event', { datetime:  moment().format('DD.MM.YYYY, hh:mm:ss'), entity: 'customer', action: 'Error on: save', data: reason });
                  res.status(500).json({ "error": reason.message });
             });
     })
     .get(function(req, res) {
         //get all customers
         Customer.findAll({}).then(function(data) {
-            io.emit('event', { entity: 'customer', action: 'get all', data: data });
+            io.emit('event', { datetime:  moment().format('DD.MM.YYYY, hh:mm:ss'), entity: 'customer', action: 'get all', data: data });
             res.json(data);
         }).catch(
             function(reason) {
                 console.log({ "Error while geting all customers ": reason });
-                 io.emit('event', { entity: 'customer', action: 'Error on: get all', data: reason });
+                 io.emit('event', { datetime:  moment().format('DD.MM.YYYY, hh:mm:ss'), entity: 'customer', action: 'Error on: get all', data: reason });
                  res.status(500).json({ "error": reason.message });
             });
     });
