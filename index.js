@@ -13,16 +13,6 @@ var sequelize = new Sequelize('backend_restful', 'am', 'matematika', {
     }
 });
 
-// db structure
-// ----------------------------------------------------
-//Customers Table Structure
-var Customer = sequelize.define('Customer', {
-    name: Sequelize.STRING,
-    address: Sequelize.STRING,
-    birthday: Sequelize.DATE
-});
-
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -35,6 +25,14 @@ router.get('/ping', function(req, res) {
     res.json({ message: 'Pong on :' + Date().toLocaleString() });
 });
 
+// db structure
+// ----------------------------------------------------
+//Customers Table Structure
+var Customer = sequelize.define('Customer', {
+    name: Sequelize.STRING,
+    address: Sequelize.STRING,
+    birthday: Sequelize.DATE
+});
 
 // /api/customers
 // ----------------------------------------------------
@@ -86,18 +84,3 @@ sequelize.sync().then(function() {
         console.log('Server is up and listening on ' + port);
     });
 });
-
-
-/*
-sequelize.sync({ force: true }).then(function(err) {
-    if (err) {
-        console.log('An error occur while creating tables');
-    } else {
-        console.log('Tables created successfully');
-    }
-});
-
-
-app.listen(port);
-console.log('Server is up and listening on ' + port);
-*/
