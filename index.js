@@ -1,5 +1,7 @@
 var express = require('express');
 var app = express();
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
 var bodyParser = require('body-parser');
 var Sequelize = require('sequelize');
 //db connection string
@@ -15,13 +17,14 @@ var sequelize = new Sequelize('backend_restful', 'am', 'matematika', {
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(express.static('public'));
 
 var port = process.env.PORT || 8080;
 
 var router = express.Router();
 
 router.get('/ping', function(req, res) {
-    console.log(req);
+    //console.log(req);
     res.json({ message: 'Pong on :' + Date().toLocaleString() });
 });
 
@@ -45,19 +48,27 @@ router.route('/customers')
             birthday: req.body.birthday
         }).then(
             function(data, error) {
-                console.log({ "saved customer": data });
+                console.log({ "Saved customer": data });
+                io.emit('event', { entity: 'customer', action: 'save', data: data });
                 res.json(data);
             }).catch(
             function(reason) {
-                console.log({ "error while saving customer ": reason });
-                res.status(500).json({"error" : reason.message});
+                console.log({ "Error while saving customer ": reason });
+                 io.emit('event', { entity: 'customer', action: 'Error on: save', data: reason });
+                 res.status(500).json({ "error": reason.message });
             });
     })
     .get(function(req, res) {
         //get all customers
         Customer.findAll({}).then(function(data) {
+            io.emit('event', { entity: 'customer', action: 'get all', data: data });
             res.json(data);
-        });
+        }).catch(
+            function(reason) {
+                console.log({ "Error while geting all customers ": reason });
+                 io.emit('event', { entity: 'customer', action: 'Error on: get all', data: reason });
+                 res.status(500).json({ "error": reason.message });
+            });
     });
 
 // /api/customers/:id
@@ -65,8 +76,7 @@ router.route('/customers')
 router.route('/customers/:id')
     .get(function(req, res) {
         //TODO get customer with id
-        res.json({ message: 'Return customer with id ' + req.params.id })
-
+        res.json({ message: 'Return customer with id ' + req.body.id })
     })
     .put(function(req, res) {
         //TODO update customer with id
@@ -77,10 +87,20 @@ router.route('/customers/:id')
         res.json({ message: 'Delete  customer with id ' + req.params.id })
     });
 
+
+
 app.use('/api', router);
 
+app.get('/', function(req, res) {
+    res.sendfile('public/index.html');
+});
+
+io.on('connect', function() { console.log('SOCKET IO CONECTED'); });
+io.on('event', function(data) { console.log(data);});
+io.on('disconnect', function() { console.log('SOCKET IO DISCONECTED'); });
+
 sequelize.sync().then(function() {
-    app.listen(port, function() {
+    server.listen(port, function() {
         console.log('Server is up and listening on ' + port);
     });
 });
