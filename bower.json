@@ -1,0 +1,26 @@
+{
+  "name": "beckendrestful",
+  "description": "\"# BackendRESTful\"",
+  "main": "index.js",
+  "authors": [
+    "Mirza Abazovic"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/programiraj/BackendRESTful",
+  "moduleType": [
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/js/",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^2.2.2",
+    "datatables.net": "^1.10.11",
+    "datatables.net-dt": "^1.10.11"
+  }
+}

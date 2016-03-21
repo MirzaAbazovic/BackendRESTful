@@ -6,11 +6,14 @@
     <meta charset="utf-8">
     <title>Log for user</title>
     <script src="js/socket.io.js"></script>
+    <script src="js/jquery/dist/jquery.js"></script>
+    <script src="js/datatables.net/js/jquery.dataTables.js"></script>
+    <link rel="stylesheet" type="text/css" href="js/datatables.net-dt/css/jquery.dataTables.css">
 </head>
 
 <body>
     <h1>Log of data changes<h2>
-        <table id="log-table" border="1">
+        <table id="log-table" class="display" cellspacing="0" width="100%">
             <thead>
                 <tr>
                     <td>Entity</td>
