@@ -1,31 +1,22 @@
 <!doctype html>
-
-<html lang="en">
+<html ng-app="orderingApp">
 
 <head>
     <meta charset="utf-8">
-    <title>Log for user</title>
-    <script src="js/socket.io.js"></script>
-    <script src="js/jquery/dist/jquery.js"></script>
-    <script src="js/datatables.net/js/jquery.dataTables.js"></script> 
-    <link rel="stylesheet" type="text/css" href="js/datatables.net-dt/css/jquery.dataTables.css">
+    <meta charset="utf-8">
+    <title>INDEX PAGE</title>
+    <script src="js/angular/angular.js"></script>
+    <script src="js/app/app.js"></script>
+    <title>INDEX PAGE </title>
 </head>
 
-<body>
-    <h1>Log of data changes<h2>
-        <table id="log-table" class="display" cellspacing="0" width="100%">
-            <thead>
-                <tr>
-                    <td>Vrijeme</td>
-                    <td>Entity</td>
-                    <td>Action</td>
-                    <td>Data</td>  
-                 </tr>
-            </thead>       
-            <tbody>
-              
-            </tbody>
-        </table>
-  <script src="js/main.js"></script>
+<body ng-controller="IndexCtrl">
+    <ul>
+        <li ng-repeat="offer in offers">
+            <span>{{offer.name}}: {{offer.description}}</span>
+            <p>Cijena: {{offer.price}} EUR</p>
+        </li>
+    </ul>
 </body>
+
 </html>
