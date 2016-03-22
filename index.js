@@ -7,6 +7,10 @@ var Sequelize = require('sequelize');
 var moment = require('moment');
 
 //db connection string
+var sequelize = new Sequelize('mysql://b5124efd4be981:33b80305@eu-cdbr-west-01.cleardb.com/heroku_7071fb755f4be3c?reconnect=true');
+
+
+/*
 var sequelize = new Sequelize('backend_restful', 'am', 'matematika', {
     host: 'localhost',
     dialect: 'mysql',
@@ -16,12 +20,14 @@ var sequelize = new Sequelize('backend_restful', 'am', 'matematika', {
         idle: 10000
     }
 });
-
+*/
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(express.static('public'));
 
 var port = process.env.PORT || 8080;
+app.set('port', (process.env.PORT || 8080));
+app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/src/views'));
 
 var router = express.Router();
 
