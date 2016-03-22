@@ -1,3 +1,11 @@
 <div>
-<h1>CUSTOMER GUI</h1>    
+    
+    <h2>Uređaj za mušterije id : {{deviceId}}</h2>
+<ul ng-repeat="o in offers">
+                <li>
+                    <p>{{o.name}}: {{o.description}}</p>
+                    {{o.price}}
+                    
+                </li>
+            </ul>
 </div>

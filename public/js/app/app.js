@@ -3,7 +3,7 @@ var orderingApp = angular.module('orderingApp', ['ngRoute']);
 orderingApp.config(['$routeProvider','$locationProvider',
   function($routeProvider,$locationProvider) {
     $routeProvider.
-      when('/customer', {
+      when('/customer/:deviceId', {
         templateUrl: 'partials/customer.html',
         controller: 'CustomerCtrl'
       }).
@@ -19,7 +19,8 @@ orderingApp.config(['$routeProvider','$locationProvider',
 
 // Controllers
 
-orderingApp.controller('CustomerCtrl', function ($scope) {
+orderingApp.controller('CustomerCtrl',  ['$scope', '$routeParams',function ($scope,$routeParams) {
+  $scope.deviceId = $routeParams.deviceId;
   $scope.offers = [
     {'name': 'Ponuda 1',
      'description': 'Opis ponude 1',
@@ -28,7 +29,7 @@ orderingApp.controller('CustomerCtrl', function ($scope) {
      'description': 'Opis ponude 2',
     'price':5.25}
     ];
-});
+}]);
 
 orderingApp.controller('SalesmanCtrl', function ($scope) {
   

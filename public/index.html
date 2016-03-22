@@ -13,23 +13,26 @@
     <script src="js/app/app.js"></script>
     <!-- bootstrap-->
     <script scr="js/bootstrap/dist/js/bootstrap.js"></script>
-    <link rel="stylesheet" href="js/bootstrap/dist/css/bootstrap.css"/>
+    <link rel="stylesheet" href="js/bootstrap/dist/css/bootstrap.css" />
+    <script scr="js/ui-bootstrap-tpls-1.2.5.js"></script>
     <title>INDEX PAGE</title>
 </head>
 
 <body>
-    <nav class="navbar navbar-default">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="#">Naručivanje</a>
-            </div>
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Početna</a></li>
-                <li><a href="#/customer">Mušterije</a></li>
-                <li><a href="#/salesman">Uposlenici</a></li>
-            </ul>
-        </div>
-    </nav>
+
+    <div class="navbar navbar-inverse">
+        <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Početna</a></li>
+            <li><a href="#/customer/1">Tablet 1</a></li>
+            <li><a href="#/customer/2">Tablet 2</a></li>
+            <li><a href="#/customer/3">Tablet 3</a></li>
+            <li><a href="#/customer/4">Tablet 4</a></li>
+            <li><a href="#/customer/5">Tablet 5</a></li>
+            <li><a href="#/salesman">Uposlenici</a></li>
+
+        </ul>
+    </div>
+
     <div ng-view>dfg</div>
 </body>
 
