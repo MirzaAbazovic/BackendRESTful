@@ -22,6 +22,9 @@
     "jquery": "^2.2.2",
     "datatables.net": "^1.10.11",
     "datatables.net-dt": "^1.10.11",
-    "angular": "^1.5.2"
+    "angular": "^1.5.2",
+    "angular-mocks": "^1.5.2",
+    "angular-route": "^1.5.2",
+    "bootstrap": "^3.3.6"
   }
 }

@@ -1,6 +1,25 @@
-var orderingApp = angular.module('orderingApp', []);
+var orderingApp = angular.module('orderingApp', ['ngRoute']);
+// Routing
+orderingApp.config(['$routeProvider','$locationProvider',
+  function($routeProvider,$locationProvider) {
+    $routeProvider.
+      when('/customer', {
+        templateUrl: 'partials/customer.html',
+        controller: 'CustomerCtrl'
+      }).
+      when('/salesman', {
+        templateUrl: 'partials/salesman.html',
+        controller: 'SalesmanCtrl'
+      }).
+      otherwise({
+        redirectTo: '/'
+      });
+     //$locationProvider.html5Mode(true);
+  }]);
 
-orderingApp.controller('IndexCtrl', function ($scope) {
+// Controllers
+
+orderingApp.controller('CustomerCtrl', function ($scope) {
   $scope.offers = [
     {'name': 'Ponuda 1',
      'description': 'Opis ponude 1',
@@ -9,4 +28,8 @@ orderingApp.controller('IndexCtrl', function ($scope) {
      'description': 'Opis ponude 2',
     'price':5.25}
     ];
+});
+
+orderingApp.controller('SalesmanCtrl', function ($scope) {
+  
 });

@@ -27,7 +27,7 @@ app.use(bodyParser.json());
 var port = process.env.PORT || 8080;
 app.set('port', (process.env.PORT || 8080));
 app.use(express.static(__dirname + '/public'));
-app.use(express.static(__dirname + '/src/views'));
+
 
 var router = express.Router();
 
@@ -102,6 +102,8 @@ app.use('/api', router);
 app.get('/', function(req, res) {
     res.sendfile('public/index.html');
 });
+
+
 
 io.on('connect', function() { console.log('SOCKET IO CONECTED'); });
 io.on('event', function(data) { console.log(data);});

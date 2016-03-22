@@ -4,19 +4,33 @@
 <head>
     <meta charset="utf-8">
     <meta charset="utf-8">
+    <base href="/">
     <title>INDEX PAGE</title>
+    <!-- Angular -->
     <script src="js/angular/angular.js"></script>
+    <script src="js/angular-route/angular-route.js"></script>
+    <!-- Custom -->
     <script src="js/app/app.js"></script>
-    <title>INDEX PAGE </title>
+    <!-- bootstrap-->
+    <script scr="js/bootstrap/dist/js/bootstrap.js"></script>
+    <link rel="stylesheet" href="js/bootstrap/dist/css/bootstrap.css"/>
+    <title>INDEX PAGE</title>
 </head>
 
-<body ng-controller="IndexCtrl">
-    <ul>
-        <li ng-repeat="offer in offers">
-            <span>{{offer.name}}: {{offer.description}}</span>
-            <p>Cijena: {{offer.price}} EUR</p>
-        </li>
-    </ul>
+<body>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">Naručivanje</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Početna</a></li>
+                <li><a href="#/customer">Mušterije</a></li>
+                <li><a href="#/salesman">Uposlenici</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div ng-view>dfg</div>
 </body>
 
 </html>
