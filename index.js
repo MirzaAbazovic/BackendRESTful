@@ -7,10 +7,9 @@ var Sequelize = require('sequelize');
 var moment = require('moment');
 
 //db connection string
-var sequelize = new Sequelize('mysql://b5124efd4be981:33b80305@eu-cdbr-west-01.cleardb.com/heroku_7071fb755f4be3c?reconnect=true');
+//var sequelize = new Sequelize('mysql://b5124efd4be981:33b80305@eu-cdbr-west-01.cleardb.com/heroku_7071fb755f4be3c?reconnect=true');
 
 
-/*
 var sequelize = new Sequelize('backend_restful', 'am', 'matematika', {
     host: 'localhost',
     dialect: 'mysql',
@@ -20,7 +19,7 @@ var sequelize = new Sequelize('backend_restful', 'am', 'matematika', {
         idle: 10000
     }
 });
-*/
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -44,6 +43,49 @@ var Customer = sequelize.define('Customer', {
     address: Sequelize.STRING,
     birthday: Sequelize.DATE
 });
+
+var MealOption = sequelize.define('mealOption', {
+  name: Sequelize.STRING,
+  price: Sequelize.DECIMAL(8,2),
+   states: {
+    type:   Sequelize.ENUM,
+    values: ['active', 'inactive']
+  }
+});
+
+
+var MealCategory = sequelize.define('mealCategory', {
+  name: Sequelize.STRING,
+   states: {
+    type:   Sequelize.ENUM,
+    values: ['active', 'inactive']
+  }
+});
+
+var MealSizePrice = sequelize.define('mealSizePrice', {
+  name: Sequelize.STRING,
+  price: Sequelize.DECIMAL(8,2),
+   states: {
+    type:   Sequelize.ENUM,
+    values: ['active', 'inactive']
+  }
+});
+
+var Meal = sequelize.define('meal', {
+  name: Sequelize.STRING,
+  description: Sequelize.STRING,
+  imageUrl: Sequelize.STRING,
+  isMultipeSize: Sequelize.BOOLEAN,
+  
+  price: Sequelize.DECIMAL(8,2),
+   states: {
+    type:   Sequelize.ENUM,
+    values: ['active', 'inactive']
+  }
+});
+
+Meal.belongsTo(MealCategory);
+
 
 // /api/customers
 // ----------------------------------------------------
