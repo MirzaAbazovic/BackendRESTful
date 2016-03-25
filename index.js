@@ -10,7 +10,7 @@ var moment = require('moment');
 //var sequelize = new Sequelize('mysql://b5124efd4be981:33b80305@eu-cdbr-west-01.cleardb.com/heroku_7071fb755f4be3c?reconnect=true');
 
 
-var sequelize = new Sequelize('backend_restful', 'am', 'matematika', {
+var sequelize = new Sequelize('restaurant', 'am', 'matematika', {
     host: 'localhost',
     dialect: 'mysql',
     pool: {
@@ -38,10 +38,18 @@ router.get('/ping', function(req, res) {
 // db structure
 // ----------------------------------------------------
 //Customers Table Structure
-var Customer = sequelize.define('Customer', {
+var Customer = sequelize.define('customer', {
     name: Sequelize.STRING,
     address: Sequelize.STRING,
     birthday: Sequelize.DATE
+});
+
+var Menu = sequelize.define('menu', {
+   name: Sequelize.STRING,
+   states: {
+    type:   Sequelize.ENUM,
+    values: ['active', 'inactive']
+  }
 });
 
 var MealOption = sequelize.define('mealOption', {
@@ -75,8 +83,8 @@ var Meal = sequelize.define('meal', {
   name: Sequelize.STRING,
   description: Sequelize.STRING,
   imageUrl: Sequelize.STRING,
-  isMultipeSize: Sequelize.BOOLEAN,
-  
+  isMultipeSize: Sequelize.BOOLEAN,  
+  hasExtraOptions: Sequelize.BOOLEAN,  
   price: Sequelize.DECIMAL(8,2),
    states: {
     type:   Sequelize.ENUM,
@@ -84,7 +92,50 @@ var Meal = sequelize.define('meal', {
   }
 });
 
+// Order is basket. Pending is while user is creating it when it is oredered 
+// it is displayed to cheef
+//confirmed zapremljena
+//delivered dostavljena
+var Order = sequelize.define('order', {
+   location: Sequelize.STRING,
+   timeOrdered: Sequelize.DATE,
+   timeCanceled: Sequelize.DATE,
+   timeConfirmed: Sequelize.DATE,
+   timeDelivered: Sequelize.DATE,
+   totalPrice: Sequelize.DECIMAL(8,2),
+   orderState: {
+    type:   Sequelize.ENUM,
+    values: ['ordered', 'confirmed', 'cancelled','delivered']
+  },
+   paidState: {
+    type:   Sequelize.ENUM,
+    values: ['yes', 'no']
+  }
+});
+
+var OrderLine = sequelize.define('orderLine', {
+   number: Sequelize.STRING,
+   price: Sequelize.DECIMAL(8,2),
+   quantity: Sequelize.DECIMAL(8,2)
+
+});
+
+
+
 Meal.belongsTo(MealCategory);
+MealCategory.hasMany(Meal, {as: 'Meals'});
+
+MealCategory.belongsTo(Menu);
+Menu.hasMany(MealCategory, {as: 'Categories'});
+
+Meal.hasMany(MealOption,{as:'Options'});
+
+
+OrderLine.belongsTo(Order);
+Order.hasMany(OrderLine, {as: 'orderLines'});
+
+OrderLine.hasOne(Meal, {as: 'Meal'});
+
 
 
 // /api/customers
