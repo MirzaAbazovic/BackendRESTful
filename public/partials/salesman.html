@@ -11,11 +11,25 @@
   close="closeAlert($index)">
   {{alert.msg}}
   </uib-alert>
+  <table class="table table-hover table-condensed">
+  <thead class="thead-inverse">
+    <tr>
+      <th>Order id</th>
+      <th>Table</th>
+      <th>Price</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="order in orders | orderBy : 'id' : true  ">
+      <td>{{order.id}}</td>
+      <td>{{order.location}}</td>
+      <td>{{order.totalPrice}}</td>
+      <td> <button type="button" ng-click="confirmOrder()" class="btn btn-success">
+  <span class="glyphicon glyphicon-ok" ></span> Confirm order </button></td>
+    </tr>
+    
+  </tbody>
+</table>
   
-  
-    <ul ng-repeat="order in orders | orderBy : 'id' : true  ">
-        <li>
-            Id: {{order.id}}  Table {{order.location}} Price: {{order.totalPrice}}   
-        </li>
-    </ul>
 </div>
