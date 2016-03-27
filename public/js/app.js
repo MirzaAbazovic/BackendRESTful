@@ -1,7 +1,11 @@
       
 var orderingApp = angular.module('orderingApp', ['ngRoute','ngResource','ui.bootstrap']);
 orderingApp.factory('Order', function($resource) {
-  return $resource('/api/orders/:id');
+  return $resource('/api/orders/:id',null,
+  {
+      'update' : { method : 'PUT'},
+  }
+  );
 });
 
 orderingApp.factory('socket', ['$rootScope', function($rootScope) {
@@ -78,17 +82,43 @@ function ($scope,$routeParams,$http,socket,Order) {
     };
     $scope.cancelOrder = function (id){
        console.log('cancel order with id '+ id);
-    };
+       $http({method: 'PUT', url: 'api/orders/'+id+'/status/cancelled'})
+       .then(function successCallback(response) {
+              $scope.getOrders();
+            }, 
+            function errorCallback(response) {
+                
+            });
+        };
+        
+        socket.on('order:confirmed', function (data) {
+                //console.log('order confimred '+data.id);
+                //u postojecoj listi
+                //$scope.myOrders[_.findIndex($scope.myOrders, function(o) { return o.id == data.id; })].orderState = 'confirmed';
+                //$scope.$apply();
+                //refreshaj ponovo
+                $scope.getOrders();
+          
+            });
 }]);
 
-orderingApp.controller('SalesmanCtrl', function ($scope,socket,Order) {
+orderingApp.controller('SalesmanCtrl', function ($scope,$http,socket,Order) {
  $scope.orders = Order.query();
     $scope.alerts = [];
     $scope.closeAlert = function(index) {
             $scope.alerts.splice(index, 1);
         };
        $scope.confirmOrder = function (id){
-       console.log('confirm order with id '+ id);
+           console.log('confirm order with id '+ id);
+           $http({method: 'PUT', url: 'api/orders/'+id+'/status/confirmed'})
+       .then(function successCallback(response) {
+            $scope.orders = Order.query();
+            //$scope.$apply();
+            }, 
+            function errorCallback(response) {
+                
+            });
+           
     }; 
  
  socket.on('order:placed', function (data) {
@@ -96,6 +126,10 @@ orderingApp.controller('SalesmanCtrl', function ($scope,socket,Order) {
                 $scope.alerts.push({msg: 'You have new order from table '+data.location+' with id: '+data.id});
                 $scope.orders.push(data);
                 $scope.$apply();
+            });
+             socket.on('order:cancelled', function (data) {
+                $scope.orders = Order.query();
+          
             });
 });
 

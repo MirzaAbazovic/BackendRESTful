@@ -159,14 +159,29 @@ router.route('/orders')
     });
 // /api/orders/:id
 // ----------------------------------------------------
-router.route('/order/:id')
+router.route('/orders/:id')
     .get(function(req, res) {
         //TODO get order with id
         res.json({ message: 'Return order with id ' + req.body.id });
-    })
+    });
+router.route('/orders/:id/status/:status')
     .put(function(req, res) {
         //TODO update order with id
-        res.json({ message: 'Update  order with id ' + req.params.id });
+        var id = req.params.id;
+        var status = req.params.status;
+        
+        Order.update({orderState: status},{where: { id : id }})
+        .then(function (result) {
+            if(result[0]===1){
+                io.emit('order:'+status,{'id':id});
+                res.json({ message: 'Update  order with id ' + id });                
+            }
+            else{
+                res.status(404).send({ message: 'Order with id ' + id +'not found'});
+            }
+        }, function(rejectedPromiseError){
+            res.json({ message: 'ERROR Update  order with id ' + id +' ERROR' + rejectedPromiseError});
+        });
     });
 
 // /api/orders/table/:id
