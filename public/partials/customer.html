@@ -1,11 +1,14 @@
 <div>
     
     <h2>Uređaj za mušterije id : {{deviceId}}</h2>
-<ul ng-repeat="o in offers">
+     <ul ng-repeat="o in offers">
                 <li>
                     <p>{{o.name}}: {{o.description}}</p>
                     {{o.price}}
                     
                 </li>
             </ul>
+            
+            <button type="button" ng-click="placeOrder()" class="btn btn-default btn-lg">
+  <span class="glyphicon glyphicon-send" ></span> Place order </button>
 </div>

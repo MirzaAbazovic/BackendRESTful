@@ -9,8 +9,7 @@ var moment = require('moment');
 //db connection string
 //var sequelize = new Sequelize('mysql://b5124efd4be981:33b80305@eu-cdbr-west-01.cleardb.com/heroku_7071fb755f4be3c?reconnect=true');
 
-
-var sequelize = new Sequelize('restaurant', 'am', 'matematika', {
+var sequelize = new Sequelize('restaurant', 'root', 'matematika', {
     host: 'localhost',
     dialect: 'mysql',
     pool: {
@@ -37,12 +36,6 @@ router.get('/ping', function(req, res) {
 
 // db structure
 // ----------------------------------------------------
-//Customers Table Structure
-var Customer = sequelize.define('customer', {
-    name: Sequelize.STRING,
-    address: Sequelize.STRING,
-    birthday: Sequelize.DATE
-});
 
 var Menu = sequelize.define('menu', {
    name: Sequelize.STRING,
@@ -105,7 +98,7 @@ var Order = sequelize.define('order', {
    totalPrice: Sequelize.DECIMAL(8,2),
    orderState: {
     type:   Sequelize.ENUM,
-    values: ['ordered', 'confirmed', 'cancelled','delivered']
+    values: ['pending', 'confirmed' ,'completed','cancelled']
   },
    paidState: {
     type:   Sequelize.ENUM,
@@ -117,11 +110,9 @@ var OrderLine = sequelize.define('orderLine', {
    number: Sequelize.STRING,
    price: Sequelize.DECIMAL(8,2),
    quantity: Sequelize.DECIMAL(8,2)
-
 });
-
-
-
+//Mappings
+// ----------------------------------------------------
 Meal.belongsTo(MealCategory);
 MealCategory.hasMany(Meal, {as: 'Meals'});
 
@@ -136,58 +127,47 @@ Order.hasMany(OrderLine, {as: 'orderLines'});
 
 OrderLine.hasOne(Meal, {as: 'Meal'});
 
-
-
-// /api/customers
+// /api/orders
 // ----------------------------------------------------
-router.route('/customers')
-    .post(function(req, res) {
-        //save customer
-        Customer.create({
-            name: req.body.name,
-            address: req.body.address,
-            birthday: req.body.birthday
-        }).then(
-            function(data, error) {
-                console.log({ "Saved customer": data });
-                io.emit('event', { datetime: moment().format('DD.MM.YYYY, hh:mm:ss'), entity: 'customer', action: 'save', data: data });
-                res.json(data);
-            }).catch(
-            function(reason) {
-                console.log({ "Error while saving customer ": reason });
-                 io.emit('event', { datetime:  moment().format('DD.MM.YYYY, hh:mm:ss'), entity: 'customer', action: 'Error on: save', data: reason });
-                 res.status(500).json({ "error": reason.message });
-            });
-    })
+router.route('/orders')
     .get(function(req, res) {
-        //get all customers
-        Customer.findAll({}).then(function(data) {
-            io.emit('event', { datetime:  moment().format('DD.MM.YYYY, hh:mm:ss'), entity: 'customer', action: 'get all', data: data });
+        Order.findAll({}).then(function(data) {
             res.json(data);
         }).catch(
             function(reason) {
-                console.log({ "Error while geting all customers ": reason });
-                 io.emit('event', { datetime:  moment().format('DD.MM.YYYY, hh:mm:ss'), entity: 'customer', action: 'Error on: get all', data: reason });
+                 console.log({ "Error while geting all orders from database ": reason });
+                 res.status(500).json({ "error": reason.message });
+            });})
+    .post(function(req, res) {
+        //save order
+        Order.create({
+            timeOrdered : new Date(),
+            location: req.body.location,
+            totalPrice : req.body.totalPrice,
+        }).then(
+            function(data, error) {
+                console.log({ "Saved order": data });
+                //emit info to salesman
+                io.emit('order:placed',data);
+                res.json(data);
+            }).catch(
+            function(reason) {
+                 console.log({ "Error while placing order ": reason });
                  res.status(500).json({ "error": reason.message });
             });
     });
 
-// /api/customers/:id
+// /api/orders/:id
 // ----------------------------------------------------
-router.route('/customers/:id')
+router.route('/order/:id')
     .get(function(req, res) {
-        //TODO get customer with id
-        res.json({ message: 'Return customer with id ' + req.body.id })
+        //TODO get order with id
+        res.json({ message: 'Return order with id ' + req.body.id });
     })
     .put(function(req, res) {
-        //TODO update customer with id
-        res.json({ message: 'Update  customer with id ' + req.params.id })
-    })
-    .delete(function(req, res) {
-        //TODO delete customer with id
-        res.json({ message: 'Delete  customer with id ' + req.params.id })
+        //TODO update order with id
+        res.json({ message: 'Update  order with id ' + req.params.id });
     });
-
 
 
 app.use('/api', router);
@@ -197,10 +177,11 @@ app.get('/', function(req, res) {
 });
 
 
-
 io.on('connect', function() { console.log('SOCKET IO CONECTED'); });
 io.on('event', function(data) { console.log(data);});
 io.on('disconnect', function() { console.log('SOCKET IO DISCONECTED'); });
+
+
 
 sequelize.sync().then(function() {
     server.listen(port, function() {

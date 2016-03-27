@@ -1,3 +1,21 @@
 <div>
-<h1>SALESMAN GUI</h1>    
+<h1>Order list</h1>
+<script type="text/ng-template" id="alert.html">
+    <div class="alert" style="background-color:#fa39c3;color:white" role="alert">
+      <div ng-transclude></div>
+    </div>
+  </script>
+
+  <uib-alert ng-repeat="alert in alerts" 
+  type="{{alert.type}}" 
+  close="closeAlert($index)">
+  {{alert.msg}}
+  </uib-alert>
+  
+  
+    <ul ng-repeat="order in orders | orderBy : 'id' : true  ">
+        <li>
+            Id: {{order.id}}  Table {{order.location}} Price: {{order.totalPrice}}   
+        </li>
+    </ul>
 </div>
