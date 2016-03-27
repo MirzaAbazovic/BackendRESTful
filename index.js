@@ -99,7 +99,7 @@ var Meal = sequelize.define('meal', {
 var Order = sequelize.define('order', {
    location: Sequelize.STRING,
    timeOrdered: Sequelize.DATE,
-   timeCanceled: Sequelize.DATE,
+   timeCancelled: Sequelize.DATE,
    timeConfirmed: Sequelize.DATE,
    timeDelivered: Sequelize.DATE,
    totalPrice: Sequelize.DECIMAL(8,2),
@@ -176,8 +176,15 @@ router.route('/orders/:id/status/:status')
         //TODO update order with id
         var id = req.params.id;
         var status = req.params.status;
-        
-        Order.update({orderState: status},{where: { id : id }})
+        var  timeConfirmed = null;
+        var  timeCancelled = null;
+        if(status==='confirmed'){
+            timeConfirmed = new Date();
+        }
+        if(status==='cancelled'){
+            timeCancelled = new Date();
+        }
+        Order.update({orderState: status,timeConfirmed:timeConfirmed,timeCancelled:timeCancelled},{where: { id : id }})
         .then(function (result) {
             if(result[0]===1){
                 io.emit('order:'+status,{'id':id});

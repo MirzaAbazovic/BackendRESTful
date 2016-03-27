@@ -18,6 +18,7 @@
                 <th>Order id</th>
                 <th>Time ordered</th>
                 <th>Time confirmed</th>
+                <th>Time cancelled</th>
                 <th>Price</th>
                 <th>Status</th>
                 <th>Action</th>
@@ -28,6 +29,7 @@
                 <td>{{order.id}}</td>
                 <td>{{order.timeOrdered | date :'HH:mm:s'}}</td>
                 <td>{{order.timeConfirmed | date :'HH:mm:s'}}</td>
+                 <td>{{order.timeCancelled | date :'HH:mm:s'}}</td>
                 <td>{{order.totalPrice}}</td>
                 <td>{{order.orderState}}</td>
                 <td>

@@ -16,6 +16,7 @@
                 <th>Time ordered</th>
                 <th>Table</th>
                 <th>Time confirmed</th>
+                <th>Time canacelled</th>
                 <th>Price</th>
                 <th>Status</th>
                 <th>Action</th>
@@ -27,6 +28,7 @@
                 <td>{{order.timeOrdered | date :'HH:mm:s'}}</td>
                 <td>{{order.location}}</td>
                 <td>{{order.timeConfirmed | date :'HH:mm:s'}}</td>
+                <td>{{order.timeCancelled | date :'HH:mm:s'}}</td>
                 <td>{{order.totalPrice}}</td>
                 <td>
                     {{order.orderState}}
