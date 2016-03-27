@@ -34,13 +34,13 @@
 <td>
 
     <div ng-if=order.orderState==="pending">
-        <button type="button"  data-id={{order.id}} ng-click="confirmOrder($event)" class="btn btn-success">
+        <button type="button"  data-id={{order.id}} ng-click="confirmOrder(order.id)" class="btn btn-success">
             <span class="glyphicon glyphicon-ok"></span> Confirm order </button>
     </div>
 
     <div ng-if=order.orderState==="confirmed">
         <button type="button" ng-click="deliverOrder()" class="btn btn-info">
-            <span class="glyphicon glyphicon-ok"></span> Deliver order </button>
+            <span class="glyphicon glyphicon-ok"></span> Order delivered </button>
     </div>
 
 </td>
