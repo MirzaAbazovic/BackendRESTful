@@ -45,8 +45,8 @@ orderingApp.config(['$routeProvider','$locationProvider',
   }]);
 
 // Controllers
-orderingApp.controller('CustomerCtrl',  ['$scope', '$routeParams','socket','Order',
-function ($scope,$routeParams,socket,Order) {
+orderingApp.controller('CustomerCtrl',  ['$scope', '$routeParams','$http','socket','Order',
+function ($scope,$routeParams,$http,socket,Order) {
   
   $scope.deviceId = $routeParams.deviceId;
   
@@ -58,7 +58,9 @@ function ($scope,$routeParams,socket,Order) {
      'description': 'Opis ponude 2',
     'price':5.25}
     ];
-    
+    $http.get("/api/orders/table/"+$scope.deviceId).then(function(response) {
+        $scope.myOrders = response.data;
+    });
     $scope.placeOrder = function (){
         var orderData = {
             location:$scope.deviceId,
@@ -66,6 +68,10 @@ function ($scope,$routeParams,socket,Order) {
         };
         var newOrder = new Order(orderData);
         newOrder.$save();
+    };
+    $scope.cancelOrder = function (e){
+        orderId = e.currentTarget.attributes['data-id'].value;
+       console.log('delete order with id '+orderId);
     };
 }]);
 
@@ -75,8 +81,11 @@ orderingApp.controller('SalesmanCtrl', function ($scope,socket,Order) {
     $scope.closeAlert = function(index) {
             $scope.alerts.splice(index, 1);
         };
-       
- //socket.connect('table1');
+       $scope.confirmOrder = function (e){
+        orderId = e.currentTarget.attributes['data-id'].value;
+       console.log('confirm order with id '+orderId);
+    }; 
+ 
  socket.on('order:placed', function (data) {
                 console.log(data);
                 $scope.alerts.push({msg: 'You have new order from table '+data.location+' with id: '+data.id});

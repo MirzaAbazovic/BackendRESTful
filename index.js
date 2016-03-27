@@ -7,8 +7,8 @@ var Sequelize = require('sequelize');
 var moment = require('moment');
 
 //db connection string
-var sequelize = new Sequelize('mysql://b5124efd4be981:33b80305@eu-cdbr-west-01.cleardb.com/heroku_7071fb755f4be3c?reconnect=true');
-/*
+//var sequelize = new Sequelize('mysql://b5124efd4be981:33b80305@eu-cdbr-west-01.cleardb.com/heroku_7071fb755f4be3c?reconnect=true');
+
 var sequelize = new Sequelize('restaurant', 'root', 'matematika', {
     host: 'localhost',
     dialect: 'mysql',
@@ -18,7 +18,7 @@ var sequelize = new Sequelize('restaurant', 'root', 'matematika', {
         idle: 10000
     }
 });
-*/
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -143,6 +143,7 @@ router.route('/orders')
         Order.create({
             timeOrdered : new Date(),
             location: req.body.location,
+            orderState : 'pending',
             totalPrice : req.body.totalPrice,
         }).then(
             function(data, error) {
@@ -156,7 +157,6 @@ router.route('/orders')
                  res.status(500).json({ "error": reason.message });
             });
     });
-
 // /api/orders/:id
 // ----------------------------------------------------
 router.route('/order/:id')
@@ -168,6 +168,21 @@ router.route('/order/:id')
         //TODO update order with id
         res.json({ message: 'Update  order with id ' + req.params.id });
     });
+
+// /api/orders/table/:id
+// ----------------------------------------------------
+router.route('/orders/table/:id')
+    .get(function(req, res) {
+        console.log(req.params.id);
+        Order.findAll({where:{'location':req.params.id}}).then(function(data) {
+            console.log(data);
+            res.json(data);
+        }).catch(
+            function(reason) {
+                 console.log({ "Error while geting orders from database ": reason });
+                 res.status(500).json({ "error": reason.message });
+            });
+        });
 
 
 app.use('/api', router);

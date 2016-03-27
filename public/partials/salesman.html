@@ -1,35 +1,52 @@
 <div>
-<h1>Order list</h1>
-<script type="text/ng-template" id="alert.html">
-    <div class="alert" style="background-color:#fa39c3;color:white" role="alert">
-      <div ng-transclude></div>
-    </div>
-  </script>
+    <h1>Order list</h1>
+    <script type="text/ng-template" id="alert.html">
+        <div class="alert" style="background-color:#fa39c3;color:white" role="alert">
+            <div ng-transclude></div>
+        </div>
+    </script>
 
-  <uib-alert ng-repeat="alert in alerts" 
-  type="{{alert.type}}" 
-  close="closeAlert($index)">
-  {{alert.msg}}
-  </uib-alert>
-  <table class="table table-hover table-condensed">
-  <thead class="thead-inverse">
-    <tr>
-      <th>Order id</th>
-      <th>Table</th>
-      <th>Price</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr ng-repeat="order in orders | orderBy : 'id' : true  ">
-      <td>{{order.id}}</td>
-      <td>{{order.location}}</td>
-      <td>{{order.totalPrice}}</td>
-      <td> <button type="button" ng-click="confirmOrder()" class="btn btn-success">
-  <span class="glyphicon glyphicon-ok" ></span> Confirm order </button></td>
-    </tr>
-    
-  </tbody>
+    <uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">
+        {{alert.msg}}
+    </uib-alert>
+    <table class="table table-hover table-condensed">
+        <thead class="thead-inverse">
+            <tr>
+                <th>Order id</th>
+                <th>Time ordered</th>
+                <th>Table</th>
+                <th>Time confirmed</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="order in orders | orderBy : 'id' : true  ">
+                <td>{{order.id}}</td>
+                <td>{{order.timeOrdered | date :'HH:mm:s'}}</td>
+                <td>{{order.location}}</td>
+                <td>{{order.timeConfirmed | date :'HH:mm:s'}}</td>
+                <td>{{order.totalPrice}}</td>
+                <td>
+                    {{order.orderState}}
+</div>
+<td>
+
+    <div ng-if=order.orderState==="pending">
+        <button type="button"  data-id={{order.id}} ng-click="confirmOrder($event)" class="btn btn-success">
+            <span class="glyphicon glyphicon-ok"></span> Confirm order </button>
+    </div>
+
+    <div ng-if=order.orderState==="confirmed">
+        <button type="button" ng-click="deliverOrder()" class="btn btn-info">
+            <span class="glyphicon glyphicon-ok"></span> Deliver order </button>
+    </div>
+
+</td>
+</tr>
+
+</tbody>
 </table>
-  
+
 </div>
