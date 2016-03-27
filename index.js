@@ -7,8 +7,8 @@ var Sequelize = require('sequelize');
 var moment = require('moment');
 
 //db connection string
-//var sequelize = new Sequelize('mysql://b5124efd4be981:33b80305@eu-cdbr-west-01.cleardb.com/heroku_7071fb755f4be3c?reconnect=true');
-
+var sequelize = new Sequelize('mysql://b5124efd4be981:33b80305@eu-cdbr-west-01.cleardb.com/heroku_7071fb755f4be3c?reconnect=true');
+/*
 var sequelize = new Sequelize('restaurant', 'root', 'matematika', {
     host: 'localhost',
     dialect: 'mysql',
@@ -18,7 +18,7 @@ var sequelize = new Sequelize('restaurant', 'root', 'matematika', {
         idle: 10000
     }
 });
-
+*/
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
