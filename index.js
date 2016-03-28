@@ -198,7 +198,7 @@ router.route('/orders/:id/status/:status')
                 res.status(404).send({ message: 'Order with id ' + id +'not found'});
             }
         }, function(rejectedPromiseError){
-            res.json({ message: 'ERROR Update  order with id ' + id +' ERROR' + rejectedPromiseError});
+            res.status(500).send({ message: 'ERROR Update  order with id ' + id +' ERROR' + rejectedPromiseError});
         });
     });
 
@@ -273,7 +273,7 @@ router.route('/admin/mealCategory/:id')
                 res.status(404).send({ message: 'Meal category with id ' + id +'not found'});
             }
         }, function(rejectedPromiseError){
-            res.json({ message: 'ERROR while updating meal category with id ' + id +' ERROR' + rejectedPromiseError});
+            res.status(500).send({ message: 'ERROR while updating meal category with id ' + id +' ERROR' + rejectedPromiseError});
         });
     })
     .delete(function(req,res){          
@@ -287,7 +287,7 @@ router.route('/admin/mealCategory/:id')
                 res.status(404).send({ message: 'Meal category with id ' + id +' not found'});
             }
         }, function(rejectedPromiseError){
-            res.json({ message: 'ERROR while deleting  meal category with id ' + id +' ERROR' + rejectedPromiseError});
+            res.status(500).send({ message: 'ERROR while deleting  meal category with id ' + id +' ERROR' + rejectedPromiseError});
         });
       
     });
@@ -351,7 +351,7 @@ router.route('/admin/mealOption/:id')
                 res.status(404).send({ message: 'Meal option with id ' + id +'not found'});
             }
         }, function(rejectedPromiseError){
-            res.json({ message: 'ERROR while updating meal option with id ' + id +' ERROR' + rejectedPromiseError});
+           res.status(500).send({ message: 'ERROR while updating meal option with id ' + id +' ERROR' + rejectedPromiseError});
         });
     })
     .delete(function(req,res){          
@@ -365,9 +365,101 @@ router.route('/admin/mealOption/:id')
                 res.status(404).send({ message: 'Meal option with id ' + id +' not found'});
             }
         }, function(rejectedPromiseError){
-            res.json({ message: 'ERROR while deleting  meal option with id ' + id +' ERROR' + rejectedPromiseError});
+             res.status(500).send({ message: 'ERROR while deleting  meal option with id ' + id +' ERROR' + rejectedPromiseError});
         });
     });
+
+
+
+
+    
+// /api/admin/meal
+// ----------------------------------------------------
+router.route('/admin/meal')
+    .post(function(req, res) {
+        Meal.create({
+             name: req.body.name,
+             description: req.body.description,
+             imageUrl: req.body.imageUrl,
+             price: req.body.price,
+             state: req.body.state,
+             mealCategoryId:req.body.mealCategoryId
+        }).then(
+            function(data, error) {               
+                 res.json(data);
+            }).catch(
+            function(reason) {                
+                console.log({ "Error while saving meal ": reason });
+                res.status(500).json({ "error": reason.message });
+            });
+    })
+    .get(function(req, res) {
+        Meal.findAll({}).then(function(data) {
+             res.json(data);
+        }).catch(
+            function(reason) {
+                console.log({ "Error while geting all meal ": reason });
+                res.status(500).json({ "error": reason.message });
+            });
+    });
+
+    
+// /api/admin/meal/:id
+// ----------------------------------------------------
+router.route('/admin/meal/:id')
+    .get(function(req, res) {
+       Meal.findAll({where:{id:req.params.id}}).then(function(data) {
+           if(data.length==0){
+               res.status(404).json({"error":"Meal not found"});
+           }else{
+            res.json(data);   
+           }
+            
+        }).catch(
+            function(reason) {
+                 console.log({ "Error while geting all meals from database ": reason });
+                 res.status(500).json({ "error": reason.message });
+            });
+        
+    })
+    .put(function(req, res) {
+         var id = req.params.id;
+         Meal.update({
+              name: req.body.name,
+             description: req.body.description,
+             imageUrl: req.body.imageUrl,
+             price: req.body.price,
+             state: req.body.state,
+             mealCategoryId:req.body.mealCategoryId
+            },
+         {where: { id : id }})
+        .then(function (result) {
+            if(result[0]===1){
+                res.json({ message: 'Updated meal with id ' + id });                
+            }
+            else{
+                res.status(404).send({ message: 'Meal with id ' + id +'not found'});
+            }
+        }, function(rejectedPromiseError){
+            res.status(500).send({ message: 'ERROR while updating meal with id ' + id +' ERROR' + rejectedPromiseError});
+        });
+    })
+    .delete(function(req,res){          
+          var id = parseInt(req.params.id);
+          Meal.destroy({where: { id : id }})
+        .then(function (result) {
+            if(result===1){
+                res.json({ message: 'Deleted meal with id ' + id });                
+            }
+            else{
+                res.status(404).send({ message: 'Meal with id ' + id +' not found'});
+            }
+        }, function(rejectedPromiseError){
+             res.status(500).send({ message: 'ERROR while deleting meal with id ' + id +' ERROR' + rejectedPromiseError});
+        });
+    });
+
+
 
 app.use('/api', router);
 
