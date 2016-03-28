@@ -6,22 +6,22 @@ var bodyParser = require('body-parser');
 var Sequelize = require('sequelize');
 var moment = require('moment');
 
+var sequelizeOptions = {
+    define: {
+        //prevent sequelize from pluralizing table names
+        freezeTableName: true,
+         // don't delete database entries but set the newly added attribute deletedAt
+         paranoid: true
+    }
+}
 var env = process.env.NODE_ENV || 'dev';
 console.log('env ='+env);
 switch (env) {
     case 'development':
-    var sequelize = new Sequelize('restaurant', 'am', 'matematika', {
-    host: 'localhost',
-    dialect: 'mysql',
-    pool: {
-        max: 5,
-        min: 0,
-        idle: 10000
-    }
-});
+    var sequelize = new Sequelize('mysql://am:matematika@localhost/restaurant?reconnect=true',sequelizeOptions);
         break;
     case 'production':
-        var sequelize = new Sequelize('mysql://b5124efd4be981:33b80305@eu-cdbr-west-01.cleardb.com/heroku_7071fb755f4be3c?reconnect=true');
+        var sequelize = new Sequelize('mysql://b5124efd4be981:33b80305@eu-cdbr-west-01.cleardb.com/heroku_7071fb755f4be3c?reconnect=true',sequelizeOptions);
 
         break;
 }
@@ -46,7 +46,7 @@ router.get('/ping', function(req, res) {
 
 var Menu = sequelize.define('menu', {
    name: Sequelize.STRING,
-   states: {
+   state: {
     type:   Sequelize.ENUM,
     values: ['active', 'inactive']
   }
@@ -55,7 +55,7 @@ var Menu = sequelize.define('menu', {
 var MealOption = sequelize.define('mealOption', {
   name: Sequelize.STRING,
   price: Sequelize.DECIMAL(8,2),
-   states: {
+   state: {
     type:   Sequelize.ENUM,
     values: ['active', 'inactive']
   }
@@ -64,7 +64,7 @@ var MealOption = sequelize.define('mealOption', {
 
 var MealCategory = sequelize.define('mealCategory', {
   name: Sequelize.STRING,
-   states: {
+   state: {
     type:   Sequelize.ENUM,
     values: ['active', 'inactive']
   }
@@ -73,7 +73,7 @@ var MealCategory = sequelize.define('mealCategory', {
 var MealSizePrice = sequelize.define('mealSizePrice', {
   name: Sequelize.STRING,
   price: Sequelize.DECIMAL(8,2),
-   states: {
+   state: {
     type:   Sequelize.ENUM,
     values: ['active', 'inactive']
   }
@@ -86,7 +86,7 @@ var Meal = sequelize.define('meal', {
   isMultipeSize: Sequelize.BOOLEAN,  
   hasExtraOptions: Sequelize.BOOLEAN,  
   price: Sequelize.DECIMAL(8,2),
-   states: {
+   state: {
     type:   Sequelize.ENUM,
     values: ['active', 'inactive']
   }
@@ -212,6 +212,84 @@ router.route('/orders/table/:id')
                  res.status(500).json({ "error": reason.message });
             });
         });
+
+
+// /api/admin/mealCategory
+// ----------------------------------------------------
+router.route('/admin/mealCategory')
+    .post(function(req, res) {
+        MealCategory.create({
+            name: req.body.name,
+            state: req.body.state
+        }).then(
+            function(data, error) {               
+                 res.json(data);
+            }).catch(
+            function(reason) {                
+                console.log({ "Error while saving mealcategory ": reason });
+                res.status(500).json({ "error": reason.message });
+            });
+    })
+    .get(function(req, res) {
+        MealCategory.findAll({}).then(function(data) {
+             res.json(data);
+        }).catch(
+            function(reason) {
+                console.log({ "Error while geting all meal categories ": reason });
+                res.status(500).json({ "error": reason.message });
+            });
+    });
+
+// /api/admin/mealCategory/:id
+// ----------------------------------------------------
+router.route('/admin/mealCategory/:id')
+    .get(function(req, res) {
+       MealCategory.findAll({where:{id:req.params.id}}).then(function(data) {
+           if(data.length==0){
+               res.status(404).json({"error":"Meal Category not found"});
+           }else{
+            res.json(data);   
+           }
+            
+        }).catch(
+            function(reason) {
+                 console.log({ "Error while geting all orders from database ": reason });
+                 res.status(500).json({ "error": reason.message });
+            });
+        
+    })
+    .put(function(req, res) {
+         var id = req.params.id;
+         MealCategory.update({name: req.body.name, state :req.body.state },{where: { id : id }})
+        .then(function (result) {
+            if(result[0]===1){
+                res.json({ message: 'Updated meal category with id ' + id });                
+            }
+            else{
+                res.status(404).send({ message: 'Meal category with id ' + id +'not found'});
+            }
+        }, function(rejectedPromiseError){
+            res.json({ message: 'ERROR while updating meal category with id ' + id +' ERROR' + rejectedPromiseError});
+        });
+    })
+    .delete(function(req,res){          
+          var id = parseInt(req.params.id);
+          MealCategory.destroy({where: { id : id }})
+        .then(function (result) {
+            if(result===1){
+                res.json({ message: 'Deleted meal category with id ' + id });                
+            }
+            else{
+                res.status(404).send({ message: 'Meal category with id ' + id +' not found'});
+            }
+        }, function(rejectedPromiseError){
+            res.json({ message: 'ERROR while deleting  meal category with id ' + id +' ERROR' + rejectedPromiseError});
+        });
+      
+    });
+
+
+
 
 
 app.use('/api', router);
