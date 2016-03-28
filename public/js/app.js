@@ -11,6 +11,22 @@ orderingApp.factory('Order', function($resource) {
   );
 });
 
+orderingApp.factory('MealCategory', function($resource) {
+  return $resource('/api/admin/mealCategory/:id',{id:'@id'},{
+        update: {
+            method: 'PUT'
+        }
+    });
+});
+
+orderingApp.factory('MealOption', function($resource) {
+  return $resource('/api/admin/mealOption/:id',{id:'@id'},{
+        update: {
+            method: 'PUT'
+        }
+    });
+});
+
 orderingApp.factory('socket', ['$rootScope', function($rootScope) {
   //var socket = io.connect();
   var socket = null;
@@ -160,7 +176,59 @@ orderingApp.controller('AdminCtrl', function ($scope,$http,socket,Order) {
 });
 
 
-orderingApp.controller('AdminMealCategoriesCtrl', function ($scope,$http,socket,Order) {
+orderingApp.controller('AdminMealCategoriesCtrl', function ($scope,MealCategory) {
+  $scope.categories = [];
+  $scope.newCategory = {
+      id:-1,
+      state:'active',
+      name:''};
+    $scope.clearCategory = function (){
+    $scope.newCategory = {
+      id:-1,
+      state:'active',
+      name:''};
+  };   
+  
+  $scope.getMealCategories = function (){
+     $scope.categories = MealCategory.query();
+  };    
+  
+  $scope.getMealCategories();
+
+  $scope.addCategory = function (){
+      //console.log($scope.newCategory);
+        category =$scope.newCategory;
+        if(category.id===-1){
+            category.id=null;
+        var newCategory = new MealCategory(category);
+        newCategory.$save(function(category, putResponseHeaders) { 
+            $scope.categories.push(category);
+            $scope.clearCategory();    
+         });   
+        }
+        else{
+             var newCategory = new MealCategory(category);
+            newCategory.$update(function(){
+            $scope.clearCategory();    
+               $scope.getMealCategories();
+        });
+        }
+};    
+$scope.editCategory = function (category){
+        console.log(category);
+        $scope.newCategory = category;       
+};    
+
+
+ $scope.deleteCategory = function (c){
+      console.log(c);
+       c.$delete(function(){
+               //console.log('deleted');
+                 $scope.getMealCategories();
+            });
+        //var newCategory = new MealCategory(category);
+        //newOrder.$save(function(category, putResponseHeaders) { $scope.categories.push(order);});
+};    
 
 });
 
@@ -170,6 +238,58 @@ orderingApp.controller('AdminMealsCtrl', function ($scope,$http,socket,Order) {
 });
 
 
-orderingApp.controller('AdminMealOptionsCtrl', function ($scope,$http,socket,Order) {
+orderingApp.controller('AdminMealOptionsCtrl', function ($scope,$http,socket,MealOption) {
+  $scope.options = [];
+  $scope.newOption = {
+      id:-1,
+      state:'active',
+      name:'',
+      price:0
+    };
+    $scope.clearOption = function (){
+    $scope.newOption = {
+      id:-1,
+      state:'active',
+      name:'',
+     price:0
+    };
+  };   
+  
+  $scope.getMealOptions = function (){
+     $scope.options = MealOption.query();
+  };    
+  
+  $scope.getMealOptions();
+
+  $scope.addOption = function (){
+      //console.log($scope.newCategory);
+        option =$scope.newOption;
+        if(option.id===-1){
+            option.id=null;
+        var newOption = new MealOption(option);
+        newOption.$save(function(option, putResponseHeaders) { 
+            $scope.options.push(option);
+            $scope.clearOption();    
+         });   
+        }
+        else{
+             var newOption = new MealOption(option);
+            newOption.$update(function(){
+            $scope.clearOption();    
+               $scope.getMealOptions();
+        });
+        }
+};    
+
+$scope.editOption = function (option){
+        $scope.newOption = option;       
+};    
+
+
+ $scope.deleteOption = function (option){
+       option.$delete(function(){
+                 $scope.getMealOptions();
+            });
+};    
 
 });

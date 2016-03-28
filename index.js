@@ -11,10 +11,14 @@ var sequelizeOptions = {
         //prevent sequelize from pluralizing table names
         freezeTableName: true,
          // don't delete database entries but set the newly added attribute deletedAt
-         paranoid: true
+         paranoid: true,
+         // disable logging; default: console.log
+         logging: false
     }
-}
+};
+
 var env = process.env.NODE_ENV || 'dev';
+
 console.log('env ='+env);
 switch (env) {
     case 'development':
@@ -363,25 +367,21 @@ router.route('/admin/mealOption/:id')
         }, function(rejectedPromiseError){
             res.json({ message: 'ERROR while deleting  meal option with id ' + id +' ERROR' + rejectedPromiseError});
         });
-      
     });
-
-
-
-
 
 app.use('/api', router);
 
 app.get('/', function(req, res) {
     res.sendfile('public/index.html');
 });
-
-
+/*
 io.on('connect', function() { console.log('SOCKET IO CONECTED'); });
-io.on('event', function(data) { console.log(data);});
+io.on('order:ordered', function(data) { console.log('order:ordered');console.log(data);});
+io.on('order:placed', function(data) { console.log('order:placed');console.log(data);});
+io.on('order:cancelled', function(data) { console.log('order:cancelled');console.log(data);});
+io.on('order:confirmed', function(data) { console.log('order:confimed');console.log(data);});
 io.on('disconnect', function() { console.log('SOCKET IO DISCONECTED'); });
-
-
+*/
 
 sequelize.sync().then(function() {
     server.listen(port, function() {
