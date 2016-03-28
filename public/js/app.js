@@ -27,6 +27,14 @@ orderingApp.factory('MealOption', function($resource) {
     });
 });
 
+orderingApp.factory('Meal', function($resource) {
+  return $resource('/api/admin/meal/:id',{id:'@id'},{
+        update: {
+            method: 'PUT'
+        }
+    });
+});
+
 orderingApp.factory('socket', ['$rootScope', function($rootScope) {
   //var socket = io.connect();
   var socket = null;
@@ -233,12 +241,70 @@ $scope.editCategory = function (category){
 });
 
 
-orderingApp.controller('AdminMealsCtrl', function ($scope,$http,socket,Order) {
+orderingApp.controller('AdminMealsCtrl', function ($scope,Meal,MealCategory) {
+    
+     $scope.meals = [];
+     MealCategory.query(function(data)
+     {
+         $scope.categories = data;
+     });
+  
+  $scope.newMeal = {
+      id:-1,
+      state:'active'
+    };
+    $scope.clearMeal = function (){
+    $scope.newMeal = {
+      id:-1,
+      state:'active',
+      name:''};
+  };   
+  
+  $scope.getMeals = function (){
+     $scope.meals = Meal.query();
+  };    
+  
+  $scope.getMeals();
+
+  $scope.addMeal = function (){
+      //console.log($scope.newCategory);
+        meal = $scope.newMeal;
+        if(meal.MealCategory){
+                meal.mealCategoryId = meal.MealCategory.id;    
+        }
+        
+        if(meal.id===-1){
+            meal.id=null;
+        var newMeal = new Meal(meal);
+        newMeal.$save(function(meal, putResponseHeaders) { 
+            $scope.getMeals();
+            $scope.clearMeal();    
+         });   
+        }
+        else{
+             var newMeal = new Meal(meal);
+            newMeal.$update(function(){
+            $scope.clearMeal();    
+               $scope.getMeals();
+        });
+        }
+};    
+$scope.editMeal = function (meal){
+        $scope.newMeal = meal;       
+};    
+
+
+ $scope.deleteMeal = function (c){
+       c.$delete(function(){
+                 $scope.getMeals();
+            });
+};    
+
 
 });
 
 
-orderingApp.controller('AdminMealOptionsCtrl', function ($scope,$http,socket,MealOption) {
+orderingApp.controller('AdminMealOptionsCtrl', function ($scope,MealOption) {
   $scope.options = [];
   $scope.newOption = {
       id:-1,

@@ -85,7 +85,7 @@ var MealSizePrice = sequelize.define('mealSizePrice', {
 
 var Meal = sequelize.define('meal', {
   name: Sequelize.STRING,
-  description: Sequelize.STRING,
+  description: Sequelize.TEXT,
   imageUrl: Sequelize.STRING,
   isMultipeSize: Sequelize.BOOLEAN,  
   hasExtraOptions: Sequelize.BOOLEAN,  
@@ -394,7 +394,7 @@ router.route('/admin/meal')
             });
     })
     .get(function(req, res) {
-        Meal.findAll({}).then(function(data) {
+        Meal.findAll({ include: [MealCategory]}).then(function(data) {
              res.json(data);
         }).catch(
             function(reason) {
