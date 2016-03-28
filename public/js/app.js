@@ -1,5 +1,8 @@
       
 var orderingApp = angular.module('orderingApp', ['ngRoute','ngResource','ui.bootstrap']);
+
+//Factories and services
+// ------------------------------------------------------------------------------
 orderingApp.factory('Order', function($resource) {
   return $resource('/api/orders/:id',null,
   {
@@ -31,6 +34,7 @@ orderingApp.factory('socket', ['$rootScope', function($rootScope) {
 }]);
 
 // Routing
+// ------------------------------------------------------------------------------
 orderingApp.config(['$routeProvider','$locationProvider',
   function($routeProvider,$locationProvider) {
     $routeProvider.
@@ -42,6 +46,22 @@ orderingApp.config(['$routeProvider','$locationProvider',
         templateUrl: 'partials/salesman.html',
         controller: 'SalesmanCtrl'
       }).
+       when('/admin', {
+        templateUrl: 'partials/admin.html',
+        controller: 'AdminCtrl'
+      }).
+       when('/admin/meal-categories', {
+        templateUrl: 'partials/admin-meal-categories.html',
+        controller: 'AdminMealCategoriesCtrl'
+      }).
+      when('/admin/meals', {
+        templateUrl: 'partials/admin-meals.html',
+        controller: 'AdminMealsCtrl'
+      }).
+       when('/admin/meal-options', {
+        templateUrl: 'partials/admin-meal-options.html',
+        controller: 'AdminMealOptionsCtrl'
+      }).
       otherwise({
         redirectTo: '/'
       });
@@ -49,6 +69,7 @@ orderingApp.config(['$routeProvider','$locationProvider',
   }]);
 
 // Controllers
+// ------------------------------------------------------------------------------
 orderingApp.controller('CustomerCtrl',  ['$scope', '$routeParams','$http','socket','Order',
 function ($scope,$routeParams,$http,socket,Order) {
   $scope.deviceId = $routeParams.deviceId;
@@ -134,3 +155,21 @@ orderingApp.controller('SalesmanCtrl', function ($scope,$http,socket,Order) {
 });
 
 
+orderingApp.controller('AdminCtrl', function ($scope,$http,socket,Order) {
+
+});
+
+
+orderingApp.controller('AdminMealCategoriesCtrl', function ($scope,$http,socket,Order) {
+
+});
+
+
+orderingApp.controller('AdminMealsCtrl', function ($scope,$http,socket,Order) {
+
+});
+
+
+orderingApp.controller('AdminMealOptionsCtrl', function ($scope,$http,socket,Order) {
+
+});

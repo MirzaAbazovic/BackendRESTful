@@ -10,7 +10,7 @@ var env = process.env.NODE_ENV || 'dev';
 console.log('env ='+env);
 switch (env) {
     case 'development':
-    var sequelize = new Sequelize('restaurant', 'root', 'matematika', {
+    var sequelize = new Sequelize('restaurant', 'am', 'matematika', {
     host: 'localhost',
     dialect: 'mysql',
     pool: {
