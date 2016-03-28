@@ -226,7 +226,7 @@ router.route('/admin/mealCategory')
                  res.json(data);
             }).catch(
             function(reason) {                
-                console.log({ "Error while saving mealcategory ": reason });
+                console.log({ "Error while saving meal category ": reason });
                 res.status(500).json({ "error": reason.message });
             });
     })
@@ -253,7 +253,7 @@ router.route('/admin/mealCategory/:id')
             
         }).catch(
             function(reason) {
-                 console.log({ "Error while geting all orders from database ": reason });
+                 console.log({ "Error while geting all meal categories from database ": reason });
                  res.status(500).json({ "error": reason.message });
             });
         
@@ -284,6 +284,84 @@ router.route('/admin/mealCategory/:id')
             }
         }, function(rejectedPromiseError){
             res.json({ message: 'ERROR while deleting  meal category with id ' + id +' ERROR' + rejectedPromiseError});
+        });
+      
+    });
+    
+    
+// /api/admin/mealOption
+// ----------------------------------------------------
+router.route('/admin/mealOption')
+    .post(function(req, res) {
+        MealOption.create({
+            name: req.body.name,
+             price: req.body.price,
+            state: req.body.state
+        }).then(
+            function(data, error) {               
+                 res.json(data);
+            }).catch(
+            function(reason) {                
+                console.log({ "Error while saving meal option ": reason });
+                res.status(500).json({ "error": reason.message });
+            });
+    })
+    .get(function(req, res) {
+        MealOption.findAll({}).then(function(data) {
+             res.json(data);
+        }).catch(
+            function(reason) {
+                console.log({ "Error while geting all meal categories ": reason });
+                res.status(500).json({ "error": reason.message });
+            });
+    });
+
+    
+// /api/admin/mealOption/:id
+// ----------------------------------------------------
+router.route('/admin/mealOption/:id')
+    .get(function(req, res) {
+       MealOption.findAll({where:{id:req.params.id}}).then(function(data) {
+           if(data.length==0){
+               res.status(404).json({"error":"Meal Option not found"});
+           }else{
+            res.json(data);   
+           }
+            
+        }).catch(
+            function(reason) {
+                 console.log({ "Error while geting all meal options from database ": reason });
+                 res.status(500).json({ "error": reason.message });
+            });
+        
+    })
+    .put(function(req, res) {
+         var id = req.params.id;
+         MealOption.update({name: req.body.name, price :req.body.price, state :req.body.state },
+         {where: { id : id }})
+        .then(function (result) {
+            if(result[0]===1){
+                res.json({ message: 'Updated meal option with id ' + id });                
+            }
+            else{
+                res.status(404).send({ message: 'Meal option with id ' + id +'not found'});
+            }
+        }, function(rejectedPromiseError){
+            res.json({ message: 'ERROR while updating meal option with id ' + id +' ERROR' + rejectedPromiseError});
+        });
+    })
+    .delete(function(req,res){          
+          var id = parseInt(req.params.id);
+          MealOption.destroy({where: { id : id }})
+        .then(function (result) {
+            if(result===1){
+                res.json({ message: 'Deleted meal option with id ' + id });                
+            }
+            else{
+                res.status(404).send({ message: 'Meal option with id ' + id +' not found'});
+            }
+        }, function(rejectedPromiseError){
+            res.json({ message: 'ERROR while deleting  meal option with id ' + id +' ERROR' + rejectedPromiseError});
         });
       
     });
