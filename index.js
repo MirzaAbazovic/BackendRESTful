@@ -133,11 +133,11 @@ Menu.hasMany(MealCategory, {as: 'Categories'});
 Meal.hasMany(MealOption,{as:'Options'});
 
 
-OrderLine.belongsTo(Order);
+OrderLine.belongsTo(Order,{as: 'order'});
 Order.hasMany(OrderLine, {as: 'orderLines'});
 
-//OrderLine.hasOne(Meal, {as: 'Meal'});
-OrderLine.belongsTo(Meal);
+//OrderLine.belongsTo(Meal); ili
+Meal.hasOne(OrderLine);
 // /api/orders
 // ----------------------------------------------------
 router.route('/orders')
@@ -150,13 +150,75 @@ router.route('/orders')
                  res.status(500).json({ "error": reason.message });
             });})
     .post(function(req, res) {
+       
+        var savedOrder;
+        return sequelize.transaction(function (t) {
+
+  // chain all your queries here. make sure you return them.
+  return  Order.create({
+            timeOrdered : new Date(),
+            location: req.body.location,
+            orderState : 'pending',
+            totalPrice : req.body.totalPrice,
+            orderLine: [{price:1},{price:2}]
+        }, {transaction: t}).then(function (order) {
+            savedOrder = order.get({plain:true});
+    return OrderLine.create(
+             {
+                 number:1,
+                 price: 45.45,
+                 mealId:1,
+                 quantity: 3,
+                 orderId : order.id
+              }, {transaction: t});
+  });
+
+}).then(function (result) {
+  // Transaction has been committed
+  // result is whatever the result of the promise chain returned to the transaction callback
+   console.log({ "Saved order": savedOrder });
+       io.emit('order:placed',savedOrder);
+                res.json(savedOrder);
+}).catch(function (err) {
+  // Transaction has been rolled back
+  // err is whatever rejected the promise chain returned to the transaction callback
+});
+        
+        /*
+        
         //save order
+        var newOrder = Order.build(
+            {
+            timeOrdered : new Date(),
+            location: req.body.location,
+            orderState : 'pending',
+            totalPrice : req.body.totalPrice,
+            });
+         var lineOrder = OrderLine.build(
+             {
+                 number:1,
+                 price: 45.45,
+                 mealId:1,
+                 quantity: 3,
+                 order:newOrder
+              });
+              newOrder.orderLines = [lineOrder];
+              lineOrder.save().then(function(data) {
+     console.log({ "Saved order": data });
+       io.emit('order:placed',data);
+                res.json(data);
+}).catch(function(error) {
+    // Ooops, do some error-handling
+  });
+  
+  */
+         /*
         Order.create({
             timeOrdered : new Date(),
             location: req.body.location,
             orderState : 'pending',
             totalPrice : req.body.totalPrice,
-            orderLine:[{price:1},{price:2}]
+            orderLine: [{price:1},{price:2}]
         }).then(
             function(data, error) {
                 console.log({ "Saved order": data });
@@ -168,6 +230,7 @@ router.route('/orders')
                  console.log({ "Error while placing order ": reason });
                  res.status(500).json({ "error": reason.message });
             });
+            */
     });
 // /api/orders/:id
 // ----------------------------------------------------
@@ -250,7 +313,7 @@ router.route('/admin/mealCategory')
 router.route('/admin/mealCategory/:id')
     .get(function(req, res) {
        MealCategory.findAll({where:{id:req.params.id}}).then(function(data) {
-           if(data.length==0){
+           if(data.length === 0){
                res.status(404).json({"error":"Meal Category not found"});
            }else{
             res.json(data);   
@@ -327,7 +390,7 @@ router.route('/admin/mealOption')
 router.route('/admin/mealOption/:id')
     .get(function(req, res) {
        MealOption.findAll({where:{id:req.params.id}}).then(function(data) {
-           if(data.length==0){
+           if(data.length === 0){
                res.status(404).json({"error":"Meal Option not found"});
            }else{
             res.json(data);   
@@ -410,7 +473,7 @@ router.route('/admin/meal')
 router.route('/admin/meal/:id')
     .get(function(req, res) {
        Meal.findAll({where:{id:req.params.id}}).then(function(data) {
-           if(data.length==0){
+           if(data.length === 0){
                res.status(404).json({"error":"Meal not found"});
            }else{
             res.json(data);   
