@@ -94,8 +94,8 @@ orderingApp.config(['$routeProvider','$locationProvider',
 
 // Controllers
 // ------------------------------------------------------------------------------
-orderingApp.controller('CustomerCtrl',  ['$scope', '$routeParams','$http','socket','Order','Meal',
-function ($scope,$routeParams,$http,socket,Order,Meal) {
+orderingApp.controller('CustomerCtrl',  ['$scope', '$routeParams','$http','$uibModal','socket','Order','Meal',
+function ($scope,$routeParams,$http,$uibModal,socket,Order,Meal) {
   $scope.deviceId = $routeParams.deviceId;
    $scope.order = {"orderLines":[{"quantity":1}]};
    
@@ -154,6 +154,22 @@ function ($scope,$routeParams,$http,socket,Order,Meal) {
                 $scope.getOrders();
           
             });
+            
+            
+            
+  $scope.open = function (orderId,size) {
+    var modalInstance = $uibModal.open({
+      animation: $scope.animationsEnabled,
+      templateUrl: 'myModalContent.html',
+      controller: 'ModalInstanceCtrl',
+      size: size,
+      resolve: {
+        orderDetails: function () {
+            return Order.get({ id: orderId });
+        }
+      }
+    });
+  };
 }]);
 
 orderingApp.controller('SalesmanCtrl', function ($scope,$http,$uibModal,socket,Order) {

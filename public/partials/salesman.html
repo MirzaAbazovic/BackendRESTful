@@ -58,14 +58,14 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="order in orders | orderBy : 'id' : true  " ng-click="open(order.id,'lg')">
-                <td>{{order.id}}</td>
-                <td>{{order.timeOrdered | date :'HH:mm:s'}}</td>
-                <td>{{order.location}}</td>
-                <td>{{order.timeConfirmed | date :'HH:mm:s'}}</td>
-                <td>{{order.timeCancelled | date :'HH:mm:s'}}</td>
-                <td>{{order.totalPrice}}</td>
-                <td>
+            <tr ng-repeat="order in orders | orderBy : 'id' : true  " >
+                <td ng-click="open(order.id,'lg')">{{order.id}}</td>
+                <td ng-click="open(order.id,'lg')">{{order.timeOrdered | date :'HH:mm:s'}}</td>
+                <td ng-click="open(order.id,'lg')">{{order.location}}</td>
+                <td ng-click="open(order.id,'lg')">{{order.timeConfirmed | date :'HH:mm:s'}}</td>
+                <td ng-click="open(order.id,'lg')">{{order.timeCancelled | date :'HH:mm:s'}}</td>
+                <td ng-click="open(order.id,'lg')">{{order.totalPrice}}</td>
+                <td ng-click="open(order.id,'lg')">
                     {{order.orderState}}
 </div>
 <td>
