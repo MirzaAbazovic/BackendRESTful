@@ -108,10 +108,10 @@ function ($scope,$routeParams,$http,$uibModal,socket,Order,Meal) {
          if($scope.order.orderLines[i].selectedMeal)
          {
              var line = $scope.order.orderLines[i];
-             orderPrice+=line.selectedMeal.price*line.quantity;
+             orderPrice += line.selectedMeal.price*line.quantity;
          }
      }   
-     return orderPrice;
+     return parseFloat(orderPrice).toFixed(2);
    };
     
     $scope.getOrders = function(){
