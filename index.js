@@ -150,17 +150,26 @@ router.route('/orders')
                  res.status(500).json({ "error": reason.message });
             });})
     .post(function(req, res) {
-       
+        var ordeLinesReq = req.body.order.orderLines;
+        var ordeLines = [];
+        for(var i=0;i<ordeLinesReq.length;i++){
+            ordeLines.push({
+                 number:i+1,
+                 mealId:ordeLinesReq[i].selectedMeal.id,
+                 quantity:ordeLinesReq[i].quantity,
+                 price : ordeLinesReq[i].quantity * ordeLinesReq[i].selectedMeal.price
+            });
+        }
+         
         var savedOrder;
         return sequelize.transaction(function (t) {
-
+        
   // chain all your queries here. make sure you return them.
   return  Order.create({
             timeOrdered : new Date(),
             location: req.body.location,
             orderState : 'pending',
-            totalPrice : req.body.totalPrice,
-            orderLine: [{price:1},{price:2}]
+            totalPrice : req.body.totalPrice
         }, {transaction: t}).then(function (order) {
             savedOrder = order.get({plain:true});
     return OrderLine.create(
