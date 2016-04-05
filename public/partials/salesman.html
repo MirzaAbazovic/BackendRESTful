@@ -1,5 +1,40 @@
 <div>
-    <h1>Order list</h1>
+
+    <script type="text/ng-template" id="myModalContent.html">
+        <div class="modal-header">
+            <h3 class="modal-title">OrderId: <b>{{orderDetails.id}}</b> Table:<b>{{orderDetails.location}}</b> 
+            State: <b>{{orderDetails.orderState}}</b> 
+            Time ordered: 
+            <b>{{orderDetails.timeOrdered | date :'HH:mm'}} =  
+                {{-(orderDetails.timeOrdered | amDifference : null : 'minutes')}}  minutes ago </b> </h3>
+        </div>
+        <div class="modal-body">
+
+            <table class="table table-hover table-condensed">
+
+                <tr>
+                    <td>number</td>
+                    <td>meal name</td>
+                    <td>quantity</td>
+                    <td>price</td>
+                </tr>
+                <tr ng-repeat="line in orderDetails.orderLines">
+                    <td> {{line.number}}</td>
+                    <td> {{line.meal.name}} </td>
+                    <td> {{line.quantity}}</td>
+                    <td> {{line.price}}</td>
+
+                </tr>
+
+            </table>
+
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+        </div>
+    </script>
+
+    <h1>Order list - click on order to see details</h1>
     <script type="text/ng-template" id="alert.html">
         <div class="alert" style="background-color:#fa39c3;color:white" role="alert">
             <div ng-transclude></div>
@@ -23,7 +58,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="order in orders | orderBy : 'id' : true  ">
+            <tr ng-repeat="order in orders | orderBy : 'id' : true  " ng-click="open(order.id,'lg')">
                 <td>{{order.id}}</td>
                 <td>{{order.timeOrdered | date :'HH:mm:s'}}</td>
                 <td>{{order.location}}</td>
@@ -36,7 +71,7 @@
 <td>
 
     <div ng-if=order.orderState==="pending">
-        <button type="button"  data-id={{order.id}} ng-click="confirmOrder(order.id)" class="btn btn-success">
+        <button type="button" data-id={{order.id}} ng-click="confirmOrder(order.id)" class="btn btn-success">
             <span class="glyphicon glyphicon-ok"></span> Confirm order </button>
     </div>
 

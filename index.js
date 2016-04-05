@@ -251,7 +251,7 @@ router.route('/orders/:id')
             }
             var order = o.get({plain:true});
             OrderLine.findAll({where:{orderId:o.id},include:[Meal]}).then(function(l){
-             order.ordeLines = l;
+             order.orderLines = l;
             res.json(order);
                
             });

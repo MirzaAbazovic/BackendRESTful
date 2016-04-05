@@ -1,5 +1,5 @@
       
-var orderingApp = angular.module('orderingApp', ['ngRoute','ngResource','ui.bootstrap']);
+var orderingApp = angular.module('orderingApp', ['ngRoute','ngResource','ui.bootstrap','angularMoment']);
 
 //Factories and services
 // ------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ function ($scope,$routeParams,$http,socket,Order,Meal) {
             });
 }]);
 
-orderingApp.controller('SalesmanCtrl', function ($scope,$http,socket,Order) {
+orderingApp.controller('SalesmanCtrl', function ($scope,$http,$uibModal,socket,Order) {
  $scope.orders = Order.query();
     $scope.alerts = [];
     $scope.closeAlert = function(index) {
@@ -168,13 +168,9 @@ orderingApp.controller('SalesmanCtrl', function ($scope,$http,socket,Order) {
        .then(function successCallback(response) {
             $scope.orders = Order.query();
             //$scope.$apply();
-            }, 
-            function errorCallback(response) {
-                
+            }, function errorCallback(response) {                
             });
-           
-    }; 
- 
+    };  
  socket.on('order:placed', function (data) {
                 console.log(data);
                 $scope.alerts.push({msg: 'You have new order from table '+data.location+' with id: '+data.id});
@@ -185,6 +181,35 @@ orderingApp.controller('SalesmanCtrl', function ($scope,$http,socket,Order) {
                 $scope.orders = Order.query();
           
             });
+
+
+  $scope.open = function (orderId,size) {
+    var modalInstance = $uibModal.open({
+      animation: $scope.animationsEnabled,
+      templateUrl: 'myModalContent.html',
+      controller: 'ModalInstanceCtrl',
+      size: size,
+      resolve: {
+        orderDetails: function () {
+            return Order.get({ id: orderId });
+        }
+      }
+    });
+  };
+  
+
+});
+
+orderingApp.controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, orderDetails) {
+ $scope.orderDetails = orderDetails;
+
+  $scope.ok = function () {
+    $uibModalInstance.close();
+  };
+
+  $scope.cancel = function () {
+    $uibModalInstance.dismiss('cancel');
+  };
 });
 
 
@@ -215,16 +240,17 @@ orderingApp.controller('AdminMealCategoriesCtrl', function ($scope,MealCategory)
   $scope.addCategory = function (){
       //console.log($scope.newCategory);
         category =$scope.newCategory;
+         var newCategory;
         if(category.id===-1){
             category.id=null;
-        var newCategory = new MealCategory(category);
+         newCategory = new MealCategory(category);
         newCategory.$save(function(category, putResponseHeaders) { 
             $scope.categories.push(category);
             $scope.clearCategory();    
          });   
         }
         else{
-             var newCategory = new MealCategory(category);
+              newCategory = new MealCategory(category);
             newCategory.$update(function(){
             $scope.clearCategory();    
                $scope.getMealCategories();
@@ -277,6 +303,7 @@ orderingApp.controller('AdminMealsCtrl', function ($scope,Meal,MealCategory) {
 
   $scope.addMeal = function (){
       //console.log($scope.newCategory);
+      var newMeal;
         meal = $scope.newMeal;
         if(meal.MealCategory){
                 meal.mealCategoryId = meal.MealCategory.id;    
@@ -284,14 +311,14 @@ orderingApp.controller('AdminMealsCtrl', function ($scope,Meal,MealCategory) {
         
         if(meal.id===-1){
             meal.id=null;
-        var newMeal = new Meal(meal);
+        newMeal = new Meal(meal);
         newMeal.$save(function(meal, putResponseHeaders) { 
             $scope.getMeals();
             $scope.clearMeal();    
          });   
         }
         else{
-             var newMeal = new Meal(meal);
+             newMeal = new Meal(meal);
             newMeal.$update(function(){
             $scope.clearMeal();    
                $scope.getMeals();
@@ -338,17 +365,18 @@ orderingApp.controller('AdminMealOptionsCtrl', function ($scope,MealOption) {
 
   $scope.addOption = function (){
       //console.log($scope.newCategory);
+      var newOption;
         option =$scope.newOption;
         if(option.id===-1){
             option.id=null;
-        var newOption = new MealOption(option);
+        newOption = new MealOption(option);
         newOption.$save(function(option, putResponseHeaders) { 
             $scope.options.push(option);
             $scope.clearOption();    
          });   
         }
         else{
-             var newOption = new MealOption(option);
+             newOption = new MealOption(option);
             newOption.$update(function(){
             $scope.clearOption();    
                $scope.getMealOptions();
