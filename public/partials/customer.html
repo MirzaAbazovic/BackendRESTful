@@ -1,17 +1,40 @@
 <div>
-
-    <h2>Uređaj za mušterije id : {{deviceId}}</h2>
-    <ul ng-repeat="o in offers">
-        <li>
-            <p>{{o.name}}: {{o.description}}</p>
-            {{o.price}}
-
-        </li>
-    </ul>
-
+    <h2>Uređaj za mušterije id : {{deviceId}}</h2> 
+    <form>
+        <div ng-repeat="o in order.orderLines">
+                <table>
+                    <tr>
+                        <td>
+                            Meal: 
+                             <select 
+                             ng-options="meal as meal.name+' - '+meal.price+' EUR' for meal in meals" 
+                             ng-model="o.selectedMeal" class="form-control"></select>
+    
+                        </td>
+                        <td>
+                            Price:
+                            <input class="form-control" readonly type="number" ng-model="o.selectedMeal.price" />
+                        </td>        
+                        <td>
+                            Quantity:
+                            <input class="form-control" type="number" ng-model="o.quantity" />
+                        </td>
+                        
+                        <td>
+                            Total: <input type="text"  readonly class="form-control" ng-pattern="/^[0-9]+$/"
+                            value="{{(o.selectedMeal.price * o.quantity).toFixed(2)}}" />
+                        </td>
+                    </tr>
+                </table></div>
+        <button type="button" ng-click="addOrderLine();" class="btn btn-default btn-lg">+</button>
+    </form>
+    <h3>ORDER TOTAL : {{orderPrice()}} EUR</h3>    
+    
+    <br>
+    
     <button type="button" ng-click="placeOrder()" class="btn btn-default btn-lg">
         <span class="glyphicon glyphicon-send"></span> Place order </button>
-
+{{order | json}}
     <table class="table table-hover table-condensed">
         <thead class="thead-inverse">
             <tr>
@@ -29,7 +52,7 @@
                 <td>{{order.id}}</td>
                 <td>{{order.timeOrdered | date :'HH:mm:s'}}</td>
                 <td>{{order.timeConfirmed | date :'HH:mm:s'}}</td>
-                 <td>{{order.timeCancelled | date :'HH:mm:s'}}</td>
+                <td>{{order.timeCancelled | date :'HH:mm:s'}}</td>
                 <td>{{order.totalPrice}}</td>
                 <td>{{order.orderState}}</td>
                 <td>

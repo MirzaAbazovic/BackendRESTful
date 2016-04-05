@@ -94,17 +94,25 @@ orderingApp.config(['$routeProvider','$locationProvider',
 
 // Controllers
 // ------------------------------------------------------------------------------
-orderingApp.controller('CustomerCtrl',  ['$scope', '$routeParams','$http','socket','Order',
-function ($scope,$routeParams,$http,socket,Order) {
+orderingApp.controller('CustomerCtrl',  ['$scope', '$routeParams','$http','socket','Order','Meal',
+function ($scope,$routeParams,$http,socket,Order,Meal) {
   $scope.deviceId = $routeParams.deviceId;
-   $scope.offers = [
-    {'name': 'Ponuda 1',
-     'description': 'Opis ponude 1',
-    'price':4.5},
-    {'name': 'Ponuda 2',
-     'description': 'Opis ponude 2',
-    'price':5.25}
-    ];
+   $scope.order = {"orderLines":[{"quantity":1}]};
+   
+   $scope.addOrderLine = function(){ $scope.order.orderLines.push({"quantity":1});};   
+   $scope.meals = Meal.query();
+   $scope.total=0;
+   $scope.orderPrice = function() { 
+     var orderPrice = 0;
+     for(var  i = 0; i<$scope.order.orderLines.length;i++){
+         if($scope.order.orderLines[i].selectedMeal)
+         {
+             var line = $scope.order.orderLines[i];
+             orderPrice+=line.selectedMeal.price+line.quantity;
+         }
+     }   
+     return orderPrice;
+   };
     
     $scope.getOrders = function(){
     $http.get("/api/orders/table/"+$scope.deviceId).then(function(response) {
@@ -116,7 +124,8 @@ function ($scope,$routeParams,$http,socket,Order) {
     $scope.placeOrder = function (){
         var orderData = {
             location:$scope.deviceId,
-            totalPrice:55.5
+            order : $scope.order,
+            totalPrice: $scope.orderPrice()
         };
         var newOrder = new Order(orderData);
         newOrder.$save(function(order, putResponseHeaders) {

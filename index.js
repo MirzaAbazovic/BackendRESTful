@@ -22,7 +22,7 @@ var env = process.env.NODE_ENV || 'dev';
 console.log('env ='+env);
 switch (env) {
     case 'development':
-    var sequelize = new Sequelize('mysql://am:matematika@localhost/restaurant?reconnect=true',sequelizeOptions);
+    var sequelize = new Sequelize('mysql://root:matematika@localhost/restaurant?reconnect=true',sequelizeOptions);
         break;
     case 'production':
         var sequelize = new Sequelize('mysql://b5124efd4be981:33b80305@eu-cdbr-west-01.cleardb.com/heroku_7071fb755f4be3c?reconnect=true',sequelizeOptions);
@@ -136,8 +136,8 @@ Meal.hasMany(MealOption,{as:'Options'});
 OrderLine.belongsTo(Order);
 Order.hasMany(OrderLine, {as: 'orderLines'});
 
-OrderLine.hasOne(Meal, {as: 'Meal'});
-
+//OrderLine.hasOne(Meal, {as: 'Meal'});
+OrderLine.belongsTo(Meal);
 // /api/orders
 // ----------------------------------------------------
 router.route('/orders')
@@ -156,6 +156,7 @@ router.route('/orders')
             location: req.body.location,
             orderState : 'pending',
             totalPrice : req.body.totalPrice,
+            orderLine:[{price:1},{price:2}]
         }).then(
             function(data, error) {
                 console.log({ "Saved order": data });
