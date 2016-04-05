@@ -137,7 +137,10 @@ OrderLine.belongsTo(Order,{as: 'order'});
 Order.hasMany(OrderLine, {as: 'orderLines'});
 
 //OrderLine.belongsTo(Meal); ili
-Meal.hasOne(OrderLine);
+//Meal.hasOne(OrderLine);
+
+OrderLine.belongsTo(Meal);
+Meal.hasMany(OrderLine, {as: 'Meals'});
 // /api/orders
 // ----------------------------------------------------
 router.route('/orders')
@@ -151,9 +154,9 @@ router.route('/orders')
             });})
     .post(function(req, res) {
         var ordeLinesReq = req.body.order.orderLines;
-        var ordeLines = [];
+        var orderLines = [];
         for(var i=0;i<ordeLinesReq.length;i++){
-            ordeLines.push({
+            orderLines.push({
                  number:i+1,
                  mealId:ordeLinesReq[i].selectedMeal.id,
                  quantity:ordeLinesReq[i].quantity,
@@ -172,14 +175,9 @@ router.route('/orders')
             totalPrice : req.body.totalPrice
         }, {transaction: t}).then(function (order) {
             savedOrder = order.get({plain:true});
-    return OrderLine.create(
-             {
-                 number:1,
-                 price: 45.45,
-                 mealId:1,
-                 quantity: 3,
-                 orderId : order.id
-              }, {transaction: t});
+            orderLines.forEach(function(element){element.orderId=savedOrder.id;});
+    return OrderLine.bulkCreate(orderLines, 
+              {transaction: t});
   });
 
 }).then(function (result) {
@@ -246,7 +244,18 @@ router.route('/orders')
 router.route('/orders/:id')
     .get(function(req, res) {
         //TODO get order with id
-        res.json({ message: 'Return order with id ' + req.body.id });
+        // include: [{model: OrderLine}]
+        Order.findById( req.params.id).then(function(o){
+            if(!o){
+                res.status(404).send({ message: 'Order with id ' + req.params.id+'not found'});  
+            }
+            var order = o.get({plain:true});
+            OrderLine.findAll({where:{orderId:o.id},include:[Meal]}).then(function(l){
+             order.ordeLines = l;
+            res.json(order);
+               
+            });
+        }); 
     });
 router.route('/orders/:id/status/:status')
     .put(function(req, res) {
@@ -481,7 +490,7 @@ router.route('/admin/meal')
 // ----------------------------------------------------
 router.route('/admin/meal/:id')
     .get(function(req, res) {
-       Meal.findAll({where:{id:req.params.id}}).then(function(data) {
+       Meal.findAll({where:{id:req.params.id}, include: [MealCategory]}).then(function(data) {
            if(data.length === 0){
                res.status(404).json({"error":"Meal not found"});
            }else{
