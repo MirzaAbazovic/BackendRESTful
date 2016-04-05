@@ -1,0 +1,37 @@
+    <div class="modal-header">
+            <h3 class="modal-title">OrderId: <b>{{orderDetails.id}}</b> Table:<b>{{orderDetails.location}}</b> 
+            State: <b>{{orderDetails.orderState}}</b> 
+            Time ordered: 
+            <b>{{orderDetails.timeOrdered | date :'HH:mm'}} =  
+                {{-(orderDetails.timeOrdered | amDifference : null : 'minutes')}}  minutes ago </b> </h3>
+        </div>
+        <div class="modal-body">
+
+            <table class="table table-hover table-condensed">
+
+                <tr>
+                    <td>number</td>
+                    <td>meal name</td>
+                    <td>quantity</td>
+                    <td>price</td>
+                </tr>
+                <tr ng-repeat="line in orderDetails.orderLines">
+                    <td> {{line.number}}</td>
+                    <td> {{line.meal.name}} </td>
+                    <td> {{line.quantity}}</td>
+                    <td> {{line.price}}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td> <b>{{orderDetails.totalPrice}}</b></td>
+                </tr>
+            </table>
+            
+           
+
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+        </div>

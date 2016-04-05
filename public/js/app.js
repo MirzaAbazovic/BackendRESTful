@@ -108,7 +108,7 @@ function ($scope,$routeParams,$http,$uibModal,socket,Order,Meal) {
          if($scope.order.orderLines[i].selectedMeal)
          {
              var line = $scope.order.orderLines[i];
-             orderPrice+=line.selectedMeal.price+line.quantity;
+             orderPrice+=line.selectedMeal.price*line.quantity;
          }
      }   
      return orderPrice;
@@ -160,8 +160,8 @@ function ($scope,$routeParams,$http,$uibModal,socket,Order,Meal) {
   $scope.open = function (orderId,size) {
     var modalInstance = $uibModal.open({
       animation: $scope.animationsEnabled,
-      templateUrl: 'myModalContent.html',
-      controller: 'ModalInstanceCtrl',
+      templateUrl: 'partials/order-details.html',
+      controller: 'OrderDetailsCtrl',
       size: size,
       resolve: {
         orderDetails: function () {
@@ -202,8 +202,8 @@ orderingApp.controller('SalesmanCtrl', function ($scope,$http,$uibModal,socket,O
   $scope.open = function (orderId,size) {
     var modalInstance = $uibModal.open({
       animation: $scope.animationsEnabled,
-      templateUrl: 'myModalContent.html',
-      controller: 'ModalInstanceCtrl',
+      templateUrl: 'partials/order-details.html',
+      controller: 'OrderDetailsCtrl',
       size: size,
       resolve: {
         orderDetails: function () {
@@ -216,7 +216,7 @@ orderingApp.controller('SalesmanCtrl', function ($scope,$http,$uibModal,socket,O
 
 });
 
-orderingApp.controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, orderDetails) {
+orderingApp.controller('OrderDetailsCtrl', function ($scope, $uibModalInstance, orderDetails) {
  $scope.orderDetails = orderDetails;
 
   $scope.ok = function () {
