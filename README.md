@@ -1,5 +1,7 @@
 # BackendRESTful 
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/MirzaAbazovic/BackendRESTful.svg)](https://greenkeeper.io/)
+
 ## Instalacija 
 
 Preuzmite kod i instalirajte potrebne node pakete
