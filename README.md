@@ -5,7 +5,7 @@
 Preuzmite kod i instalirajte potrebne node pakete
 
 ```console
-git clone https://github.com/programiraj/BackendRESTful.git
+git clone https://github.com/MirzaAbazovic/BackendRESTful.git
 cd  BackendRESTful
 npm install
 ```
